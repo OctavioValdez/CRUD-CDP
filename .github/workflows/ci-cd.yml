@@ -45,10 +45,10 @@ jobs:
           AWS_REGION: ${{ env.AWS_REGION }}
           AWS_ACCOUNT_ID: ${{ env.AWS_ACCOUNT_ID }}
           ECR_REPOSITORY: ${{ env.ECR_REPOSITORY }}
-          HOST: ${{ env.HOST }}
-          USER: ${{ env.USER }}
-          PASSWORD: ${{ env.PASSWORD }}
-          NAME: ${{ env.NAME}}
+          HOST: ${{ secrets.HOST }}
+          USER: ${{ secrets.USER }}
+          PASSWORD: ${{ secrets.PASSWORD }}
+          NAME: ${{ secrets.NAME }}
           TAG: ${{ github.sha }}
         run: |
           docker build --build-arg HOST=$HOST\--build-arg USER=$USER\--build-arg PASSWORD=$PASSWORD\--build-arg NAME=$NAME \-t cdp/crud .
