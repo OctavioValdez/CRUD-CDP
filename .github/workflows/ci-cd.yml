@@ -1,0 +1,52 @@
+name: CI/CD Pipeline for ECR
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+env:
+  AWS_REGION: us-east-1
+  AWS_ACCOUNT_ID: 060795930894
+  ECR_REPOSITORY: cdp/crud
+jobs:
+  push-to-ecr:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.9"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Set up AWS CLI
+        run: |
+          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws configure set default.region ${{ env.AWS_REGION }}
+
+      - name: Log in to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v1
+        with:
+          region: ${{ env.AWS_REGION }}
+
+      - name: Build, tag, and push image to ECR
+        env:
+          AWS_REGION: ${{ env.AWS_REGION }}
+          AWS_ACCOUNT_ID: ${{ env.AWS_ACCOUNT_ID }}
+          ECR_REPOSITORY: ${{ env.ECR_REPOSITORY }}
+          TAG: ${{ github.sha }}
+        run: |
+          docker build -t cicd-app .
+          docker tag cicd-app:latest 060795930894.dkr.ecr.us-east-1.amazonaws.com/cicd-app:$TAG
+          docker push 060795930894.dkr.ecr.us-east-1.amazonaws.com/cicd-app:$TAG
