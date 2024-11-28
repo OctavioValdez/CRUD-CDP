@@ -24,7 +24,7 @@ def get_db_connection():
 
 @app.route('/')
 def index():
-    return 'Welcome to the CRUD'
+    return 'Welcome to the CRUD :)'
 
 @app.route('/clientes', methods=['GET', 'POST'])
 def manage_clientes():
