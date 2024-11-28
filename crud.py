@@ -1,7 +1,7 @@
 # FILE: app.py
 from flask import Flask, request, jsonify
 from dotenv import load_dotenv
-import pymysql
+import pymysql.cursors
 import os
 
 load_dotenv()

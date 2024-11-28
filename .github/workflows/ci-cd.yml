@@ -33,11 +33,20 @@ jobs:
           push: false
           tags: my-flask-app:latest
 
+      - name: Create .env file
+        run: |
+          echo "HOST=${{ secrets.HOST }}" >> .env
+          echo "PORT=${{ secrets.PORT }}" >> .env
+          echo "USER=${{ secrets.USER }}" >> .env
+          echo "PASSWORD=${{ secrets.PASSWORD }}" >> .env
+          echo "DB_NAME=${{ secrets.NAME }}" >> .env
+
       - name: Run Docker container
         run: |
           docker run -d -p 5000:5000 --env-file .env --name my-flask-app my-flask-app:latest
 
   push-to-ecr:
+    needs: build-and-run
     runs-on: ubuntu-latest
 
     steps:
