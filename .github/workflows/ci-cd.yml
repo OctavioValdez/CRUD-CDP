@@ -57,4 +57,5 @@ jobs:
                        --build-arg NAME=$NAME \
                        -t cdp/crud .
           docker tag cdp/crud:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:$TAG
+          docker login --username AWS --password-stdin $ECR_URI
           docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:$TAG
