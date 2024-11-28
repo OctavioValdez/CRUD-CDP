@@ -10,7 +10,6 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app)
 
-# Database connection
 def get_db_connection():
     connection = pymysql.connect(
         host=os.getenv('HOST'),
@@ -69,7 +68,6 @@ def manage_cliente(id):
         connection.close()
         return jsonify({'message': 'Cliente deleted successfully'})
 
-# CRUD for Domicilios
 @app.route('/domicilios', methods=['GET', 'POST'])
 def manage_domicilios():
     if request.method == 'POST':
@@ -113,7 +111,6 @@ def manage_domicilio(id):
         connection.close()
         return jsonify({'message': 'Domicilio deleted successfully'})
 
-# CRUD for Productos
 @app.route('/productos', methods=['GET', 'POST'])
 def manage_productos():
     if request.method == 'POST':
