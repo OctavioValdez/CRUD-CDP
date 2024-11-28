@@ -40,7 +40,7 @@ jobs:
         with:
           region: ${{ env.AWS_REGION }}
 
-      - name: Build, tag, and push image to ECR
+      - name: Build, tag, and push to ECR
         env:
           AWS_REGION: ${{ env.AWS_REGION }}
           AWS_ACCOUNT_ID: ${{ env.AWS_ACCOUNT_ID }}
