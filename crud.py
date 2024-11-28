@@ -20,6 +20,10 @@ def get_db_connection():
     )
     return connection
 
+@app.route('/')
+def index():
+    return 'Welcome to the CRUD API'
+
 @app.route('/clientes', methods=['GET', 'POST'])
 def manage_clientes():
     if request.method == 'POST':
