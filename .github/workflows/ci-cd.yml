@@ -32,7 +32,7 @@ jobs:
       - name: Set up AWS CLI
         run: |
           aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCES_KEY }}
           aws configure set default.region ${{ env.AWS_REGION }}
 
       - name: Log in to Amazon ECR
@@ -45,8 +45,12 @@ jobs:
           AWS_REGION: ${{ env.AWS_REGION }}
           AWS_ACCOUNT_ID: ${{ env.AWS_ACCOUNT_ID }}
           ECR_REPOSITORY: ${{ env.ECR_REPOSITORY }}
+          HOST: ${{ env.HOST }}
+          USER: ${{ env.USER }}
+          PASSWORD: ${{ env.PASSWORD }}
+          NAME: ${{ env.NAME}}
           TAG: ${{ github.sha }}
         run: |
-          docker build -t cicd-app .
-          docker tag cicd-app:latest 060795930894.dkr.ecr.us-east-1.amazonaws.com/cicd-app:$TAG
-          docker push 060795930894.dkr.ecr.us-east-1.amazonaws.com/cicd-app:$TAG
+          docker build --build-arg HOST=$HOST\--build-arg USER=$USER\--build-arg PASSWORD=$PASSWORD\--build-arg NAME=$NAME \-t cdp/crud .
+          docker tag cdp/crud:latest 060795930894.dkr.ecr.us-east-1.amazonaws.com/cdp/crud:$TAG
+          docker push 060795930894.dkr.ecr.us-east-1.amazonaws.com/cdp/crud:$TAG

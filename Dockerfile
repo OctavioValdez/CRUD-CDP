@@ -2,12 +2,20 @@ FROM python:3.9-slim
 
 WORKDIR /app
 
-COPY . /app
+COPY . .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-EXPOSE 5000
+ARG HOST
+ARG USER
+ARG PASSWORD
+ARG NAME
 
-ENV FLASK_APP=app.py
+ENV HOST=$HOST
+ENV USER=$USER
+ENV PASSWORD=$PASSWORD
+ENV NAME=$NAME
 
-CMD ["flask", "run", "--host=0.0.0.0"]
+EXPOSE 5000 
+
+CMD ["python", "app.py"]
