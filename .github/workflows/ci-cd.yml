@@ -1,18 +1,12 @@
-name: CI/CD Pipeline for ECR
+name: Build and Push Docker Image to ECR
 
 on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
-env:
-  AWS_REGION: us-east-1
-  AWS_ACCOUNT_ID: 060795930894
-  ECR_REPOSITORY: cdp/crud
+
 jobs:
-  push-to-ecr:
+  build-and-push:
     runs-on: ubuntu-latest
 
     steps:
@@ -30,20 +24,24 @@ jobs:
           pip install -r requirements.txt
 
       - name: Set up AWS CLI
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCES_KEY }}
+          AWS_REGION: ${{ env.AWS_REGION }}
         run: |
-          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCES_KEY }}
-          aws configure set default.region ${{ env.AWS_REGION }}
+          aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+          aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+          aws configure set default.region $AWS_REGION
 
       - name: Log in to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v1
         with:
-          region: ${{ env.AWS_REGION }}
+          region: ${{ secrets.REGION }}
 
       - name: Build, tag, and push to ECR
         env:
-          AWS_REGION: ${{ env.AWS_REGION }}
-          AWS_ACCOUNT_ID: ${{ env.AWS_ACCOUNT_ID }}
+          AWS_REGION: ${{ secrets.REGION }}
+          AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           ECR_REPOSITORY: ${{ env.ECR_REPOSITORY }}
           HOST: ${{ secrets.HOST }}
           USER: ${{ secrets.USER }}
@@ -51,6 +49,10 @@ jobs:
           NAME: ${{ secrets.NAME }}
           TAG: ${{ github.sha }}
         run: |
-          docker build --build-arg HOST=$HOST\--build-arg USER=$USER\--build-arg PASSWORD=$PASSWORD\--build-arg NAME=$NAME \-t cdp/crud .
-          docker tag cdp/crud:latest 060795930894.dkr.ecr.us-east-1.amazonaws.com/cdp/crud:$TAG
-          docker push 060795930894.dkr.ecr.us-east-1.amazonaws.com/cdp/crud:$TAG
+          docker build --build-arg HOST=$HOST \
+                       --build-arg USER=$USER \
+                       --build-arg PASSWORD=$PASSWORD \
+                       --build-arg NAME=$NAME \
+                       -t cdp/crud .
+          docker tag cdp/crud:latest $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:$TAG
+          docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:$TAG
